@@ -41,3 +41,101 @@
     </ul>
   </body>
 </html>
+
+
+{% comment %} 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To-Do App</title>
+</head>
+<body>
+    <h1>To-Do List</h1>
+
+    <!-- Form to add a new task -->
+    <form id="add-task-form">
+        <input type="text" id="task-input" placeholder="Add a task" required />
+        <button type="submit">Add</button>
+    </form>
+
+    <!-- List to display tasks -->
+    <ul id="task-list"></ul>
+
+    <script>
+        // Fetch all tasks and display them
+        function fetchTasks() {
+            fetch('/api/todos')
+                .then(response => response.json())
+                .then(data => {
+                    const taskList = document.getElementById('task-list');
+                    taskList.innerHTML = ''; // Clear the list first
+
+                    data.forEach(task => {
+                        const listItem = document.createElement('li');
+                        listItem.innerHTML = `
+                            <span>${task.task} - ${task.status ? 'Completed' : 'Incomplete'}</span>
+                            <button onclick="updateTask(${task.id}, '${task.task}', ${task.status})">Update</button>
+                            <button onclick="deleteTask(${task.id})">Delete</button>
+                        `;
+                        taskList.appendChild(listItem);
+                    });
+                });
+        }
+
+        // Add a new task
+        document.getElementById('add-task-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const taskInput = document.getElementById('task-input');
+            const newTask = { task: taskInput.value };
+
+            fetch('/api/todos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newTask)
+            })
+            .then(response => response.json())
+            .then(data => {
+                taskInput.value = ''; // Clear the input field
+                fetchTasks(); // Refresh the task list
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        // Update a task's status or task text
+        function updateTask(id, taskText, status) {
+            const newTaskText = prompt('Update task:', taskText);
+            const newStatus = confirm('Mark as completed?') ? true : status;
+
+            const updatedTask = { task: newTaskText, status: newStatus };
+
+            fetch(`/api/todos/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedTask)
+            })
+            .then(response => response.json())
+            .then(data => fetchTasks()) // Refresh task list after update
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Delete a task
+        function deleteTask(id) {
+            fetch(`/api/todos/${id}`, {
+                method: 'DELETE'
+            })
+            .then(() => fetchTasks()) // Refresh task list after deletion
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Initial fetch to display tasks when page loads
+        window.onload = fetchTasks;
+    </script>
+</body>
+</html> {% endcomment %}
