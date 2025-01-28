@@ -1,0 +1,17 @@
+# Python bytecode files
+__pycache__/
+
+# Flask-Migrate / Alembic migrations folder
+migrations/
+
+# Environment variables file
+.env
+
+# VS Code editor settings (if using VS Code)
+.vscode/
+
+# IDE files
+.idea/
+
+# Virtual environment (if using one)
+venv/
